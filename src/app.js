@@ -29,7 +29,14 @@ const state = {
   // wallet: { mnemonicWords, mnemonic, address, addressTypeLabel, path, wifOrEncrypted, isBip38,
   //           seedEncrypted, encryptedSeedBlob, extraAddresses }
   wallet: null,
+  // In-memory-only record of wallets generated this session: public data
+  // (address, type, path, label) never touches localStorage/IndexedDB/disk
+  // and is gone on reload or close. See inventory.notice for the exact
+  // wording shown to the user. Never store mnemonic/WIF/encrypted blobs here.
+  sessionInventory: [],
 };
+let currentInventoryEntry = null;
+let screenIndexBeforeInventory = null;
 
 /** Shorthand bound to the current UI language. */
 function tr(key, vars) {
@@ -116,7 +123,89 @@ function applyTranslations() {
   paintStrengthMeter('seedAesStrengthMeter', 'seedAesStrengthLabel', estimatePassphraseBits(state.seedAesPassword), tr('strength.emptySeedAes'));
   $('bip38Hint').textContent = tr(state.passphrase.length > 0 ? 'config.bip38.hint.enabled' : 'config.bip38.hint.disabled');
   if (state.wallet) renderDashboard();
+  if ($('screen-inventory').classList.contains('visible')) renderInventory();
 }
+
+// ---------- Session inventory (in-memory only, never persisted) ----------
+function updateInventoryBadge() {
+  $('inventoryCount').textContent = String(state.sessionInventory.length);
+}
+
+function renderInventory() {
+  const list = $('inventoryList');
+  if (state.sessionInventory.length === 0) {
+    list.innerHTML = `<p class="inventory-empty">${tr('inventory.empty')}</p>`;
+    return;
+  }
+  list.innerHTML = state.sessionInventory
+    .slice()
+    .reverse()
+    .map((entry) => `
+      <div class="inventory-item">
+        <div class="inventory-item-head">
+          <input type="text" class="inventory-label-input" data-id="${entry.id}" placeholder="${tr('inventory.labelPlaceholder')}" value="${escapeHtml(entry.label)}" />
+          <span class="badge">${escapeHtml(entry.addressTypeLabel)}</span>
+          ${entry.isBip38 ? '<span class="badge on">BIP38</span>' : ''}
+          ${entry.seedEncrypted ? '<span class="badge on">AES</span>' : ''}
+          ${entry.pdfGenerated ? `<span class="badge on">${tr('inventory.pdfBadge')}</span>` : ''}
+        </div>
+        <div class="address-box" style="margin-top:8px;">${escapeHtml(entry.address)}</div>
+        <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">${escapeHtml(entry.path)} · ${entry.createdAt.toLocaleTimeString()}</div>
+        <div class="btn-row" style="margin-top:8px;">
+          <button class="copy-btn" data-copy-id="${entry.id}">${tr('dashboard.copy')}</button>
+          <button class="copy-btn" data-remove-id="${entry.id}" style="color:var(--danger); border-color:var(--danger);">${tr('inventory.remove')}</button>
+        </div>
+      </div>`)
+    .join('');
+}
+
+$('inventoryList').addEventListener('input', (e) => {
+  if (!e.target.classList.contains('inventory-label-input')) return;
+  const entry = state.sessionInventory.find((x) => x.id === e.target.dataset.id);
+  if (entry) entry.label = e.target.value;
+});
+
+$('inventoryList').addEventListener('click', async (e) => {
+  const copyId = e.target.dataset.copyId;
+  const removeId = e.target.dataset.removeId;
+  if (copyId) {
+    const entry = state.sessionInventory.find((x) => x.id === copyId);
+    if (entry) flashCopyResult(e.target, await copyToClipboard(entry.address));
+  } else if (removeId) {
+    state.sessionInventory = state.sessionInventory.filter((x) => x.id !== removeId);
+    updateInventoryBadge();
+    renderInventory();
+  }
+});
+
+$('btnClearInventory').addEventListener('click', () => {
+  state.sessionInventory = [];
+  updateInventoryBadge();
+  renderInventory();
+});
+
+function openInventory() {
+  screenIndexBeforeInventory = state.screenIndex;
+  $(`screen-${SCREENS[state.screenIndex]}`).classList.remove('visible');
+  $('steps').classList.add('hidden');
+  $('screen-inventory').classList.add('visible');
+  renderInventory();
+  window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+}
+
+function closeInventory() {
+  $('screen-inventory').classList.remove('visible');
+  $('steps').classList.remove('hidden');
+  if (screenIndexBeforeInventory !== null) {
+    $(`screen-${SCREENS[screenIndexBeforeInventory]}`).classList.add('visible');
+  }
+}
+
+$('inventoryToggle').addEventListener('click', () => {
+  if ($('screen-inventory').classList.contains('visible')) closeInventory();
+  else openInventory();
+});
+$('btnCloseInventory').addEventListener('click', closeInventory);
 
 // ---------- Screen 0: welcome ----------
 $('btnStart').addEventListener('click', () => {
@@ -479,6 +568,23 @@ async function generateWallet() {
     encryptedSeedBlob,
   };
 
+  // Session-only inventory entry: public data alone (address, type, path),
+  // never the mnemonic/WIF/encrypted blob. See the `sessionInventory`
+  // comment on `state` for why this never touches persistent storage.
+  currentInventoryEntry = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    address: derived.address,
+    addressTypeLabel: ADDRESS_TYPES[state.addressType].label,
+    path: derived.path,
+    isBip38,
+    seedEncrypted,
+    createdAt: new Date(),
+    label: '',
+    pdfGenerated: false,
+  };
+  state.sessionInventory.push(currentInventoryEntry);
+  updateInventoryBadge();
+
   renderDashboard();
 }
 
@@ -752,6 +858,7 @@ $('btnGeneratePdf').addEventListener('click', async () => {
     });
     downloadBlob(blob, 'btc-paper-wallet.pdf');
     $('pdfStatus').textContent = tr('dashboard.pdfSuccess');
+    if (currentInventoryEntry) currentInventoryEntry.pdfGenerated = true;
   } catch (err) {
     $('pdfStatus').textContent = tr('dashboard.pdfError') + err.message;
     console.error(err);
@@ -771,6 +878,7 @@ $('btnWipe').addEventListener('click', () => {
   }
   state.wallet = null;
   state._decoyWallet = null;
+  currentInventoryEntry = null;
   state.passphrase = '';
   state.useBip38 = false;
   state.showAllAddresses = false;

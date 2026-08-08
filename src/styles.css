@@ -207,6 +207,49 @@ strong { color: var(--text); }
 }
 .warning-box strong { color: var(--danger); }
 
+.info-box {
+  background: var(--bg-panel-2);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin: 16px 0;
+  color: var(--text-dim);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.info-box strong { color: var(--accent); }
+
+.inventory-item {
+  background: var(--bg-panel-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+.inventory-item-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.inventory-label-input {
+  flex: 1;
+  min-width: 160px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-family: var(--sans);
+  font-size: 13px;
+}
+.inventory-empty {
+  color: var(--text-dim);
+  font-size: 13px;
+  text-align: center;
+  padding: 24px 0;
+}
+
 .btn {
   appearance: none;
   border: none;

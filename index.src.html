@@ -14,6 +14,9 @@
   <div class="topbar">
     <div class="brand"><span class="coin">₿</span> Paper Wallet BTC</div>
     <div class="topbar-actions">
+      <button class="theme-toggle" id="inventoryToggle" type="button">
+        <span data-i18n="topbar.inventory.label">🗂 Inventario</span> <span class="badge" id="inventoryCount">0</span>
+      </button>
       <span class="mode-toggle-group">
         <button class="mode-toggle" id="modeToggle" type="button" aria-pressed="false">
           <span data-i18n="topbar.mode.prefix">Modo:</span> <strong id="modeLabel" data-i18n="topbar.mode.basic">Básico</strong>
@@ -31,6 +34,21 @@
     <div class="dot" data-step="2"></div>
     <div class="dot" data-step="3"></div>
   </div>
+
+  <!-- SESSION INVENTORY (not part of the wizard flow; toggled independently) -->
+  <section class="screen" id="screen-inventory">
+    <div class="panel">
+      <h2 data-i18n="inventory.title">Inventario de esta sesión</h2>
+      <div class="info-box" data-i18n="inventory.notice">
+        Esta lista vive solo en la memoria de esta pestaña…
+      </div>
+      <div id="inventoryList"></div>
+      <div class="btn-row" style="margin-top:16px;">
+        <button class="btn btn-secondary" id="btnCloseInventory" type="button" data-i18n="inventory.close">Cerrar</button>
+        <button class="btn btn-danger" id="btnClearInventory" type="button" data-i18n="inventory.clearAll">Vaciar inventario</button>
+      </div>
+    </div>
+  </section>
 
   <!-- SCREEN 0: WELCOME -->
   <section class="screen" id="screen-welcome">

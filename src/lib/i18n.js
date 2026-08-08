@@ -24,6 +24,22 @@ const dict = {
   'topbar.theme.toDark': { es: '🌙 Modo oscuro', en: '🌙 Dark mode' },
   'topbar.lang.toEnglish': { es: '🌐 English', en: '🌐 English' },
   'topbar.lang.toSpanish': { es: '🌐 Español', en: '🌐 Español' },
+  'topbar.inventory.label': { es: '🗂 Inventario', en: '🗂 Inventory' },
+
+  'inventory.title': { es: 'Inventario de esta sesión', en: 'This session’s inventory' },
+  'inventory.notice': {
+    es: '<strong>Solo vive en la memoria de esta pestaña.</strong> No se guarda en el disco, ni en localStorage, ni en ningún otro lugar: se borra por completo al recargar o cerrar la página. Muestra únicamente direcciones públicas — nunca la semilla ni la clave privada — como ayuda para llevar la cuenta si generás varias carteras en la misma sesión (por ejemplo, para regalos). No reemplaza al PDF: es solo una lista de referencia temporal.',
+    en: '<strong>Lives only in this tab’s memory.</strong> It is never saved to disk, localStorage, or anywhere else: it’s completely gone when you reload or close the page. It shows only public addresses — never the seed or private key — as a way to keep track if you generate several wallets in the same session (for gifts, for example). It doesn’t replace the PDF: it’s just a temporary reference list.',
+  },
+  'inventory.empty': {
+    es: 'Todavía no generaste ninguna cartera en esta sesión.',
+    en: 'You haven’t generated any wallet in this session yet.',
+  },
+  'inventory.labelPlaceholder': { es: 'Nombre para identificarla (opcional)', en: 'Name to identify it (optional)' },
+  'inventory.pdfBadge': { es: 'PDF generado', en: 'PDF generated' },
+  'inventory.remove': { es: 'Quitar', en: 'Remove' },
+  'inventory.clearAll': { es: 'Vaciar inventario', en: 'Clear inventory' },
+  'inventory.close': { es: 'Cerrar', en: 'Close' },
 
   'welcome.title': {
     es: 'Generador de Carteras de Papel para Bitcoin',

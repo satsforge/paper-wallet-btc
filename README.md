@@ -37,6 +37,19 @@ Cambiar de idioma mientras hay una cartera en pantalla vuelve a renderizar
 el panel — esto re-enmascara cualquier semilla o clave privada que
 estuviera revelada en ese momento. Es un efecto intencional, no un bug.
 
+## Inventario de la sesión
+
+Un botón "🗂 Inventario" en la barra superior lleva la cuenta de las
+carteras generadas durante la sesión actual — útil si generás varias de
+una sentada (por ejemplo, para regalos). Guarda **solo datos públicos**
+(dirección, tipo, ruta de derivación, y una etiqueta opcional que vos le
+pongas): nunca la semilla, la clave privada, ni el blob cifrado. Vive
+enteramente en una variable de JavaScript (`state.sessionInventory`) — no
+toca `localStorage`, `IndexedDB`, cookies ni el disco en ningún momento, y
+desaparece por completo al recargar o cerrar la pestaña. El panel muestra
+este aviso de forma permanente, no como un tooltip que se pueda pasar por
+alto. No sustituye al PDF: es una lista de referencia temporal, nada más.
+
 ## Modelo de seguridad
 
 - **CSPRNG**: la semilla usa `crypto.getRandomValues()` (vía
