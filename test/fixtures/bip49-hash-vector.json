@@ -1,0 +1,8 @@
+{
+  "_source": "https://github.com/bitcoin/bips/blob/master/bip-0049.mediawiki#test-vectors",
+  "_note": "Network-independent intermediate hashes from BIP49's official worked example (its address/version bytes are testnet-only, but HASH160(pubkey) and HASH160(redeemScript) are network-agnostic and reused here to check p2pkhAddress and p2shP2wpkhAddress against an authoritative source).",
+  "pubkeyHex": "03a1af804ac108a8a51782198c2d034b28bf90c8803f5a53f76276fa69a4eae77f",
+  "hash160OfPubkeyHex": "38971f73930f6c141d977ac4fd4a727c854935b3",
+  "redeemScriptHex": "001438971f73930f6c141d977ac4fd4a727c854935b3",
+  "hash160OfRedeemScriptHex": "336caa13e08b96080a32b5d818d59b4ab3b36742"
+}

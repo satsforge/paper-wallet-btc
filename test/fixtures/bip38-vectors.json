@@ -1,0 +1,16 @@
+[
+  {
+    "_source": "https://github.com/bitcoin/bips/blob/master/bip-0038.mediawiki#test-vectors (Compression, no EC multiply / Test 1)",
+    "passphrase": "TestingOneTwoThree",
+    "privateKeyHex": "CBF4B9F70470856BB4F40F80B87EDB90865997FFEE6DF315AB166D713AF433A5",
+    "wif": "L44B5gGEpqEDRS9vVPz7QT35jcBG2r3CZwSwQ4fCewXAhAhqGVpP",
+    "encrypted": "6PYNKZ1EAgYgmQfmNVamxyXVWHzK5s6DGhwP4J5o44cvXdoY7sRzhtpUeo"
+  },
+  {
+    "_source": "https://github.com/bitcoin/bips/blob/master/bip-0038.mediawiki#test-vectors (Compression, no EC multiply / Test 2)",
+    "passphrase": "Satoshi",
+    "privateKeyHex": "09C2686880095B1A4C249EE3AC4EEA8A014F11E6F986D0B5025AC1F39AFBD9AE",
+    "wif": "KwYgW8gcxj1JWJXhPSu4Fqwzfhp5Yfi42mdYmMa4XqK7NJxXUSK7",
+    "encrypted": "6PYLtMnXvfG3oJde97zRyLYFZCYizPU5T3LwgdYJz1fRhh16bU7u6PPmY7"
+  }
+]

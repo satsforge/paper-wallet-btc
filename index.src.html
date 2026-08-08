@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="es" data-theme="dark" data-mode="basic">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="referrer" content="no-referrer" />
+<meta http-equiv="Content-Security-Policy" content="__CSP__" />
+<title>BTC Paper Wallet — Generador Air-Gapped</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23f7931a'/%3E%3Ctext x='16' y='23' font-family='Arial,sans-serif' font-size='20' font-weight='bold' fill='%231a1200' text-anchor='middle'%3E%E2%82%BF%3C/text%3E%3C/svg%3E" />
+<style>__CSS__</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand"><span class="coin">₿</span> Paper Wallet BTC</div>
+    <div class="topbar-actions">
+      <span class="mode-toggle-group">
+        <button class="mode-toggle" id="modeToggle" type="button" aria-pressed="false">
+          <span data-i18n="topbar.mode.prefix">Modo:</span> <strong id="modeLabel" data-i18n="topbar.mode.basic">Básico</strong>
+        </button>
+        <span class="tip" tabindex="0" data-i18n-tip="topbar.mode.tip" data-tip="">?</span>
+      </span>
+      <button class="theme-toggle" id="langToggle" type="button" data-i18n="topbar.lang.toEnglish">🌐 English</button>
+      <button class="theme-toggle" id="themeToggle" type="button" data-i18n="topbar.theme.toLight">☀ Modo claro</button>
+    </div>
+  </div>
+
+  <div class="steps" id="steps">
+    <div class="dot" data-step="0"></div>
+    <div class="dot" data-step="1"></div>
+    <div class="dot" data-step="2"></div>
+    <div class="dot" data-step="3"></div>
+  </div>
+
+  <!-- SCREEN 0: WELCOME -->
+  <section class="screen" id="screen-welcome">
+    <div class="panel">
+      <h1 data-i18n="welcome.title">Generador de Carteras de Papel para Bitcoin</h1>
+      <p data-i18n="welcome.intro">Herramienta 100% del lado del cliente…</p>
+      <div class="warning-box" data-i18n="welcome.warning">
+        <strong>Recomendación de seguridad:</strong> …
+      </div>
+      <p data-i18n="welcome.flow">El flujo consta de…</p>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnStart" type="button" data-i18n="welcome.button">Generar Nueva Cartera</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN 1: ENTROPY -->
+  <section class="screen" id="screen-entropy">
+    <div class="panel">
+      <h2 data-i18n="entropy.title">Paso 1 — Recolección de entropía</h2>
+      <p data-i18n="entropy.intro">Mueve el ratón…</p>
+      <div class="entropy-wrap" id="entropyWrap">
+        <canvas id="entropyCanvas"></canvas>
+        <div class="entropy-hint" id="entropyHint" data-i18n="entropy.hint">Mueve el cursor o toca aquí…</div>
+      </div>
+      <div class="progress-bar"><div id="entropyProgress"></div></div>
+
+      <div class="advanced-only">
+        <fieldset style="margin-top:16px;">
+          <legend><span data-i18n="dice.legend">Entropía por dados físicos (diceware)</span>
+            <span class="tip" tabindex="0" data-i18n-tip="dice.legend.tip" data-tip="">?</span>
+          </legend>
+          <label class="field-label" for="diceInput" data-i18n="dice.label">Tiradas (solo dígitos 1–6, separados como quieras)</label>
+          <input type="text" id="diceInput" inputmode="numeric" autocomplete="off" spellcheck="false" data-i18n-placeholder="dice.placeholder" placeholder="Ej: 3 6 1 4 2 5 6 1 4 3 2 …" />
+          <div class="progress-bar" style="margin-top:8px;"><div id="diceProgress"></div></div>
+          <div class="strength-label" id="diceLabel">0 tiradas registradas</div>
+        </fieldset>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="btnBackToWelcome" type="button" data-i18n="entropy.back">Atrás</button>
+        <button class="btn btn-primary" id="btnEntropyContinue" type="button" disabled data-i18n="entropy.continue">Continuar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN 2: CONFIG -->
+  <section class="screen" id="screen-config">
+    <div class="panel">
+      <h2 data-i18n="config.title">Paso 2 — Configuración</h2>
+
+      <fieldset>
+        <legend><span data-i18n="config.addressType.legend">Tipo de dirección</span>
+          <span class="tip" tabindex="0" data-i18n-tip="config.addressType.tip" data-tip="">?</span>
+        </legend>
+        <div class="radio-row" id="addressTypeRow"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span data-i18n="config.wordCount.legend">Longitud de la semilla</span>
+          <span class="tip" tabindex="0" data-i18n-tip="config.wordCount.tip" data-tip="">?</span>
+        </legend>
+        <div class="radio-row">
+          <label class="radio-opt selected" data-wc="24">
+            <input type="radio" name="wc" value="24" checked />
+            <div><div><strong data-i18n="config.wordCount.24.label">24 palabras</strong> <span class="badge" data-i18n="config.wordCount.24.badge">Recomendado</span></div>
+            <div class="meta" data-i18n="config.wordCount.24.meta">256 bits de entropía — máxima seguridad</div></div>
+          </label>
+          <label class="radio-opt" data-wc="12">
+            <input type="radio" name="wc" value="12" />
+            <div><div><strong data-i18n="config.wordCount.12.label">12 palabras</strong> <span class="badge" data-i18n="config.wordCount.12.badge">Avanzado</span></div>
+            <div class="meta" data-i18n="config.wordCount.12.meta">128 bits de entropía — más corta de transcribir</div></div>
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span data-i18n="config.passphrase.legend">Frase de protección extra (BIP39 Passphrase) — opcional</span>
+          <span class="tip" tabindex="0" data-i18n-tip="config.passphrase.tip" data-tip="">?</span>
+        </legend>
+        <label class="field-label" for="passphrase" data-i18n="config.passphrase.label">Clave extra (1–100 caracteres)</label>
+        <div class="input-group">
+          <input type="password" id="passphrase" maxlength="100" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-i18n-placeholder="config.passphrase.placeholder" placeholder="Déjalo vacío para no usar passphrase" />
+          <button class="eye-btn" id="togglePassphrase" type="button" data-i18n-aria="config.passphrase.eyeAria" aria-label="Mostrar/ocultar">👁</button>
+        </div>
+        <div class="strength-meter" id="strengthMeter">
+          <div></div><div></div><div></div><div></div>
+        </div>
+        <div class="strength-label" id="strengthLabel" data-i18n="strength.emptyPassphrase">Sin frase de protección</div>
+        <p style="margin-bottom:0; font-size:12.5px;" data-i18n="config.passphrase.note">Esta clave crea una identidad de cartera…</p>
+      </fieldset>
+
+      <fieldset>
+        <legend><span data-i18n="config.bip38.legend">Cifrado BIP38 de la clave privada</span>
+          <span class="tip" tabindex="0" data-i18n-tip="config.bip38.tip" data-tip="">?</span>
+        </legend>
+        <div class="checkbox-row">
+          <input type="checkbox" id="useBip38" disabled />
+          <label for="useBip38" data-i18n="config.bip38.checkboxLabel">Cifrar la clave privada (WIF) impresa en el PDF con BIP38, usando la frase de protección extra como contraseña.</label>
+        </div>
+        <p id="bip38Hint" style="margin-bottom:0; font-size:12.5px;" data-i18n="config.bip38.hint.disabled">Introduce una frase de protección extra arriba para habilitar esta opción.</p>
+      </fieldset>
+
+      <div class="advanced-only">
+        <fieldset>
+          <legend><span data-i18n="config.extraAddresses.legend">Direcciones adicionales</span>
+            <span class="tip" tabindex="0" data-i18n-tip="config.extraAddresses.tip" data-tip="">?</span>
+          </legend>
+          <div class="checkbox-row">
+            <input type="checkbox" id="showAllAddresses" />
+            <label for="showAllAddresses" data-i18n="config.extraAddresses.checkboxLabel">Mostrar e incluir en el PDF (página 2, solo direcciones públicas) las 4 direcciones que se pueden derivar de esta semilla.</label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend><span data-i18n="config.seedAes.legend">Cifrado AES de la semilla impresa</span>
+            <span class="tip" tabindex="0" data-i18n-tip="config.seedAes.tip" data-tip="">?</span>
+          </legend>
+          <div class="checkbox-row">
+            <input type="checkbox" id="useSeedAes" />
+            <label for="useSeedAes" data-i18n="config.seedAes.checkboxLabel">Cifrar también la semilla impresa con AES-256 (contraseña independiente de la passphrase BIP39).</label>
+          </div>
+          <div id="seedAesFields" class="hidden" style="margin-top:10px;">
+            <label class="field-label" for="seedAesPassword" data-i18n="config.seedAes.passwordLabel">Contraseña de cifrado del PDF</label>
+            <div class="input-group">
+              <input type="password" id="seedAesPassword" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-i18n-placeholder="config.seedAes.placeholder" placeholder="Contraseña distinta a la passphrase (recomendado)" />
+              <button class="eye-btn" id="toggleSeedAesPassword" type="button" data-i18n-aria="config.passphrase.eyeAria" aria-label="Mostrar/ocultar">👁</button>
+            </div>
+            <div class="strength-meter" id="seedAesStrengthMeter">
+              <div></div><div></div><div></div><div></div>
+            </div>
+            <div class="strength-label" id="seedAesStrengthLabel" data-i18n="strength.emptySeedAes">Sin contraseña</div>
+            <p style="margin-bottom:0; font-size:12.5px;" data-i18n="config.seedAes.note">Guarda esta contraseña por separado del PDF…</p>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="btnBackToEntropy" type="button" data-i18n="config.back">Atrás</button>
+        <button class="btn btn-primary" id="btnGenerate" type="button" data-i18n="config.generate">Generar Cartera</button>
+      </div>
+      <p id="configError" style="color:var(--danger); font-size:13px;"></p>
+    </div>
+  </section>
+
+  <!-- SCREEN 3: DASHBOARD -->
+  <section class="screen" id="screen-dashboard">
+    <div class="panel">
+      <h2 data-i18n="dashboard.title">Paso 3 — Tu cartera</h2>
+
+      <div class="grid-2">
+        <div>
+          <label class="field-label"><span data-i18n="dashboard.mnemonic.label">Frase semilla (mnemonic)</span>
+            <button class="copy-btn" id="btnToggleMnemonic" type="button" data-i18n="dashboard.mnemonic.show">Mostrar</button>
+          </label>
+          <div class="mnemonic-grid masked" id="mnemonicGrid"></div>
+          <div class="reveal-gate hidden" id="seedAesGate">
+            <button class="btn btn-secondary" id="btnRevealSeed" type="button" data-i18n="dashboard.seedAesGate.button">Descifrar semilla</button>
+            <span style="font-size:12px; color:var(--text-dim)" data-i18n="dashboard.seedAesGate.hint">Semilla cifrada con AES-256 — pide su propia contraseña.</span>
+          </div>
+        </div>
+        <div>
+          <label class="field-label"><span data-i18n="dashboard.address.label">Dirección pública</span>
+            <button class="copy-btn" id="btnCopyAddress" type="button" data-i18n="dashboard.copy">Copiar</button>
+          </label>
+          <div class="address-box" id="addressBox"></div>
+          <div class="qr-wrap" style="margin-top:10px;"><canvas id="qrAddress"></canvas></div>
+        </div>
+      </div>
+
+      <div id="extraAddressesBlock" class="hidden" style="margin-top:20px;">
+        <label class="field-label"><span data-i18n="dashboard.extraAddresses.label">Direcciones adicionales (misma semilla)</span>
+          <span class="tip" tabindex="0" data-i18n-tip="dashboard.extraAddresses.tip" data-tip="">?</span>
+        </label>
+        <div id="extraAddressesList"></div>
+      </div>
+
+      <div style="margin-top:20px;">
+        <label class="field-label"><span data-i18n="dashboard.wif.label">Clave privada (WIF</span><span id="wifBip38Tag"></span>)
+          <button class="copy-btn" id="btnCopyWif" type="button" disabled data-i18n="dashboard.copy">Copiar</button>
+        </label>
+        <div class="wif-box" id="wifBox">••••••••••••••••••••••••••••••••••</div>
+        <div class="reveal-gate" id="revealGate">
+          <button class="btn btn-secondary" id="btnRevealWif" type="button" data-i18n="dashboard.wif.reveal">Mostrar clave privada</button>
+          <span style="font-size:12px; color:var(--text-dim)" data-i18n="dashboard.wif.revealHint">Se te pedirá tu frase de protección para confirmar.</span>
+        </div>
+      </div>
+
+      <div class="advanced-only">
+        <fieldset style="margin-top:20px;">
+          <legend><span data-i18n="dashboard.decoy.legend">Cartera oculta / señuelo (negación plausible)</span>
+            <span class="tip" tabindex="0" data-i18n-tip="dashboard.decoy.tip" data-tip="">?</span>
+          </legend>
+          <p style="font-size:12.5px; margin-top:0;" data-i18n="dashboard.decoy.intro">Esta sección no genera una semilla nueva…</p>
+          <label class="field-label" for="decoyPassphrase" data-i18n="dashboard.decoy.passphraseLabel">Passphrase de la cartera señuelo (vacío = sin passphrase)</label>
+          <div class="input-group">
+            <input type="password" id="decoyPassphrase" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-i18n-placeholder="dashboard.decoy.placeholder" placeholder="Déjalo vacío o usa una passphrase distinta a la real" />
+            <button class="eye-btn" id="toggleDecoyPassphrase" type="button" data-i18n-aria="config.passphrase.eyeAria" aria-label="Mostrar/ocultar">👁</button>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-secondary" id="btnPreviewDecoy" type="button" data-i18n="dashboard.decoy.previewButton">Calcular dirección señuelo</button>
+          </div>
+          <div id="decoyResult" class="hidden" style="margin-top:10px;">
+            <label class="field-label"><span data-i18n="dashboard.decoy.addressLabel">Dirección señuelo (dato público)</span>
+              <button class="copy-btn" id="btnCopyDecoyAddress" type="button" data-i18n="dashboard.copy">Copiar</button>
+            </label>
+            <div class="address-box" id="decoyAddressBox"></div>
+            <div class="btn-row">
+              <button class="btn btn-secondary" id="btnDownloadDecoyCard" type="button" data-i18n="dashboard.decoy.downloadButton">Descargar tarjeta señuelo (solo dirección, sin mnemonic)</button>
+            </div>
+          </div>
+          <p id="decoyStatus" style="font-size:12.5px;"></p>
+        </fieldset>
+      </div>
+
+      <div class="warning-box" style="margin-top:20px;">
+        <input type="checkbox" id="confirmUnderstand" style="margin-right:8px;" />
+        <label for="confirmUnderstand" data-i18n="dashboard.consent"><strong>Entiendo</strong> que si pierdo la semilla o la clave extra…</label>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="btnBackToConfig" type="button" data-i18n="dashboard.back">Atrás</button>
+        <button class="btn btn-primary" id="btnGeneratePdf" type="button" disabled data-i18n="dashboard.generatePdf">Generar PDF Seguro</button>
+        <button class="btn btn-danger" id="btnWipe" type="button" data-i18n="dashboard.wipe">Borrar todo (nueva cartera)</button>
+      </div>
+      <p id="pdfStatus" style="font-size:12.5px;"></p>
+    </div>
+  </section>
+
+  <p class="footer-note" data-i18n="footer.note">Código 100% cliente · sin cookies · sin almacenamiento persistente · sin llamadas de red (bloqueadas por CSP). Revisa el código fuente antes de confiar en él.</p>
+</div>
+<script>__SCRIPT__</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "_source": "https://github.com/bitcoin/bips/blob/master/bip-0084.mediawiki#test-vectors",
+  "mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+  "passphrase": "",
+  "path": "m/84'/0'/0'/0/0",
+  "wif": "KyZpNDKnfs94vbrwhJneDi77V6jF64PWPF8x5cdJb8ifgg2DUc9d",
+  "pubkeyHex": "0330d54fd0dd420a6e5f8d3624f5f3482cae350f79d5f0753bf5beef9c2d91af3c",
+  "address": "bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu"
+}
