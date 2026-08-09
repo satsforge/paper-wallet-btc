@@ -367,8 +367,12 @@ input[type='text']:focus, input[type='password']:focus { outline: none; border-c
   padding: 6px 8px;
   display: flex; gap: 6px;
 }
-.mnemonic-grid .w .i { color: var(--text-dim); min-width: 16px; }
+/* The index is CSS-generated content, not a text node, specifically so
+   that selecting/copying the grid's text (e.g. click-to-select-all on the
+   container) yields clean space-separated words, never "1.word2.word". */
+.mnemonic-grid .w::before { content: attr(data-i) '.'; color: var(--text-dim); min-width: 16px; }
 .mnemonic-grid.masked .w .word { filter: blur(5px); user-select: none; }
+.mnemonic-grid.selectable { cursor: text; }
 
 .address-box, .wif-box {
   font-family: var(--mono);
@@ -379,6 +383,7 @@ input[type='text']:focus, input[type='password']:focus { outline: none; border-c
   word-break: break-all;
   font-size: 14px;
 }
+.wif-box[data-revealed="true"] { cursor: text; }
 
 .qr-wrap { display: flex; align-items: center; justify-content: center; padding: 12px; background: #fff; border-radius: 8px; }
 .qr-wrap canvas { image-rendering: pixelated; }

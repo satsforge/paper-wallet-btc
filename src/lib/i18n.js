@@ -75,10 +75,6 @@ const dict = {
   'recover.decrypting': { es: 'Descifrando…', en: 'Decrypting…' },
   'recover.close': { es: 'Cerrar', en: 'Close' },
   'recover.resultLabel': { es: 'Semilla recuperada', en: 'Recovered seed' },
-  'recover.selectableLabel': {
-    es: 'O seleccionala vos mismo (un clic la selecciona toda):',
-    en: 'Or select it yourself (one click selects it all):',
-  },
   'recover.resultNote': {
     es: 'Esta semilla no vuelve a cifrarse ni a guardarse en ningún lado: solo se muestra en pantalla. Copiala a mano o usá el botón "Copiar" para importarla en tu wallet, y cerrá esta ventana cuando termines.',
     en: 'This seed is not re-encrypted or saved anywhere: it’s only shown on screen. Write it down or use the "Copy" button to import it into your wallet, and close this screen when you’re done.',

@@ -228,7 +228,6 @@ function closeRecover() {
   $('recoverError').textContent = '';
   $('recoverResult').classList.add('hidden');
   $('recoverMnemonicGrid').innerHTML = '';
-  $('recoverSeedText').value = '';
 }
 
 $('btnOpenRecover').addEventListener('click', openRecover);
@@ -254,15 +253,7 @@ $('btnDecryptRecover').addEventListener('click', async () => {
   try {
     const plain = await decryptMnemonic(blob, pass);
     const words = plain.split(' ');
-    $('recoverMnemonicGrid').innerHTML = words
-      .map((word, i) => `<div class="w"><span class="i">${i + 1}.</span><span class="word">${escapeHtml(word)}</span></div>`)
-      .join('');
-    // A guaranteed-correct fallback alongside the "Copiar" button: the
-    // Clipboard API needs a secure context and can fail silently on some
-    // browsers when this file is opened directly via file://, which is
-    // this app's primary intended way of running. Selecting text by hand
-    // never depends on any clipboard permission or API succeeding.
-    $('recoverSeedText').value = plain;
+    $('recoverMnemonicGrid').innerHTML = renderMnemonicGridHtml(words);
     $('recoverResult').classList.remove('hidden');
   } catch {
     $('recoverError').textContent = tr('recover.error.failed');
@@ -279,16 +270,17 @@ $('btnCopyRecoveredSeed').addEventListener('click', async () => {
   flashCopyResult($('btnCopyRecoveredSeed'), await copyToClipboard(words.join(' ')));
 });
 
-// A click's *default* mouseup action is what places a collapsed caret at
-// the clicked position, and it fires after 'focus' — so calling select()
-// on focus alone gets silently overwritten a moment later. Preventing
-// mouseup's default stops that caret placement so the full-text selection
-// from select() actually sticks. The 'focus' listener alone still covers
-// keyboard-driven focus (e.g. Tab), which has no competing mouseup.
-$('recoverSeedText').addEventListener('focus', (e) => e.target.select());
-$('recoverSeedText').addEventListener('mouseup', (e) => {
-  e.preventDefault();
-  e.target.select();
+// Click-to-select-all on the *same* element that already displays the
+// value — a clipboard-API-free fallback for copying it by hand (the
+// Clipboard API needs a secure context and can fail silently when this
+// file is opened via file://, this app's primary intended way of running).
+// Deliberately not a second field showing the same secret again: the
+// display already there is the fallback.
+$('recoverMnemonicGrid').addEventListener('click', () => {
+  if ($('recoverMnemonicGrid').children.length > 0) selectAllTextIn($('recoverMnemonicGrid'));
+});
+$('wifBox').addEventListener('click', () => {
+  if ($('wifBox').dataset.revealed === 'true') selectAllTextIn($('wifBox'));
 });
 
 // ---------- Screen 0: welcome ----------
@@ -690,9 +682,7 @@ function renderDashboard() {
     $('seedAesGate').classList.add('hidden');
     const grid = $('mnemonicGrid');
     grid.classList.add('masked');
-    grid.innerHTML = w.mnemonicWords
-      .map((word, i) => `<div class="w"><span class="i">${i + 1}.</span><span class="word">${escapeHtml(word)}</span></div>`)
-      .join('');
+    grid.innerHTML = renderMnemonicGridHtml(w.mnemonicWords);
     $('btnToggleMnemonic').textContent = tr('dashboard.mnemonic.show');
   }
 
@@ -742,6 +732,27 @@ function escapeHtml(s) {
   return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+/** Shared markup for every numbered word grid (dashboard, seed-AES reveal, recovery). */
+function renderMnemonicGridHtml(words) {
+  return words
+    .map((word, i) => `<div class="w" data-i="${i + 1}"><span class="word">${escapeHtml(word)}</span></div>`)
+    .join('');
+}
+
+/**
+ * Selects an element's full text contents via the Selection/Range API —
+ * the div/grid equivalent of textarea.select(), used to make an *existing*
+ * display element directly copyable by hand instead of duplicating the
+ * same sensitive value into a second field just so it can be selected.
+ */
+function selectAllTextIn(el) {
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
 function onRevealWifClick() {
   const gate = $('revealGate');
   if (state.passphrase.length > 0) {
@@ -783,9 +794,7 @@ async function onRevealSeedClick() {
       const words = plain.split(' ');
       $('mnemonicGrid').classList.remove('hidden');
       $('mnemonicGrid').classList.remove('masked');
-      $('mnemonicGrid').innerHTML = words
-        .map((word, i) => `<div class="w"><span class="i">${i + 1}.</span><span class="word">${escapeHtml(word)}</span></div>`)
-        .join('');
+      $('mnemonicGrid').innerHTML = renderMnemonicGridHtml(words);
       $('btnToggleMnemonic').classList.remove('hidden');
       $('btnToggleMnemonic').textContent = tr('dashboard.mnemonic.hide');
       gate.innerHTML = `<span class="badge on">${tr('dashboard.seedAes.decryptedBadge')}</span>`;

@@ -88,9 +88,7 @@
         <label class="field-label"><span data-i18n="recover.resultLabel">Semilla recuperada</span>
           <button class="copy-btn" id="btnCopyRecoveredSeed" type="button" data-i18n="dashboard.copy">Copiar</button>
         </label>
-        <div class="mnemonic-grid" id="recoverMnemonicGrid"></div>
-        <label class="field-label" for="recoverSeedText" style="margin-top:10px;" data-i18n="recover.selectableLabel">O seleccionala vos mismo (un clic la selecciona toda):</label>
-        <textarea id="recoverSeedText" rows="2" readonly style="width:100%; resize:vertical; background:var(--bg-panel-2); border:1px solid var(--border); color:var(--text); border-radius:8px; padding:11px 12px; font-family:var(--mono); font-size:13px;"></textarea>
+        <div class="mnemonic-grid selectable" id="recoverMnemonicGrid"></div>
         <p style="font-size:12.5px;" data-i18n="recover.resultNote">Esta semilla no vuelve a cifrarse ni a guardarse en ningún lado: solo se muestra en pantalla.</p>
       </div>
     </div>
