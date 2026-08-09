@@ -207,6 +207,90 @@ $('inventoryToggle').addEventListener('click', () => {
 });
 $('btnCloseInventory').addEventListener('click', closeInventory);
 
+// ---------- Recover an encrypted seed printed on a PDF, standalone ----------
+// Deliberately independent of `state.wallet`: this must work in a brand new
+// session where nothing has been generated yet, with only the PDF and the
+// AES password in hand. See recover.intro for the user-facing explanation.
+function openRecover() {
+  $('screen-welcome').classList.remove('visible');
+  $('screen-recover').classList.add('visible');
+  $('recoverError').textContent = '';
+  $('recoverResult').classList.add('hidden');
+  window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+}
+
+function closeRecover() {
+  $('screen-recover').classList.remove('visible');
+  $('screen-welcome').classList.add('visible');
+  $('recoverBlob').value = '';
+  $('recoverPassword').value = '';
+  $('recoverPassword').type = 'password';
+  $('recoverError').textContent = '';
+  $('recoverResult').classList.add('hidden');
+  $('recoverMnemonicGrid').innerHTML = '';
+  $('recoverSeedText').value = '';
+}
+
+$('btnOpenRecover').addEventListener('click', openRecover);
+$('btnCloseRecover').addEventListener('click', closeRecover);
+
+$('toggleRecoverPassword').addEventListener('click', () => {
+  const input = $('recoverPassword');
+  input.type = input.type === 'password' ? 'text' : 'password';
+});
+
+$('btnDecryptRecover').addEventListener('click', async () => {
+  const blob = $('recoverBlob').value.trim();
+  const pass = $('recoverPassword').value;
+  const btn = $('btnDecryptRecover');
+  if (!blob || !pass) {
+    $('recoverError').textContent = tr('recover.error.empty');
+    return;
+  }
+  btn.disabled = true;
+  const original = btn.textContent;
+  btn.textContent = tr('recover.decrypting');
+  $('recoverError').textContent = '';
+  try {
+    const plain = await decryptMnemonic(blob, pass);
+    const words = plain.split(' ');
+    $('recoverMnemonicGrid').innerHTML = words
+      .map((word, i) => `<div class="w"><span class="i">${i + 1}.</span><span class="word">${escapeHtml(word)}</span></div>`)
+      .join('');
+    // A guaranteed-correct fallback alongside the "Copiar" button: the
+    // Clipboard API needs a secure context and can fail silently on some
+    // browsers when this file is opened directly via file://, which is
+    // this app's primary intended way of running. Selecting text by hand
+    // never depends on any clipboard permission or API succeeding.
+    $('recoverSeedText').value = plain;
+    $('recoverResult').classList.remove('hidden');
+  } catch {
+    $('recoverError').textContent = tr('recover.error.failed');
+    $('recoverResult').classList.add('hidden');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = original;
+  }
+});
+
+$('btnCopyRecoveredSeed').addEventListener('click', async () => {
+  const words = Array.from($('recoverMnemonicGrid').querySelectorAll('.word')).map((el) => el.textContent);
+  if (words.length === 0) return;
+  flashCopyResult($('btnCopyRecoveredSeed'), await copyToClipboard(words.join(' ')));
+});
+
+// A click's *default* mouseup action is what places a collapsed caret at
+// the clicked position, and it fires after 'focus' — so calling select()
+// on focus alone gets silently overwritten a moment later. Preventing
+// mouseup's default stops that caret placement so the full-text selection
+// from select() actually sticks. The 'focus' listener alone still covers
+// keyboard-driven focus (e.g. Tab), which has no competing mouseup.
+$('recoverSeedText').addEventListener('focus', (e) => e.target.select());
+$('recoverSeedText').addEventListener('mouseup', (e) => {
+  e.preventDefault();
+  e.target.select();
+});
+
 // ---------- Screen 0: welcome ----------
 $('btnStart').addEventListener('click', () => {
   showScreen(1);

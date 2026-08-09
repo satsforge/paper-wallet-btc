@@ -31,3 +31,12 @@ test('each encryption uses a fresh salt/nonce, so the same input never repeats',
   assert.equal(await decryptMnemonic(blobA, 'same-password'), MNEMONIC);
   assert.equal(await decryptMnemonic(blobB, 'same-password'), MNEMONIC);
 });
+
+test('decryptMnemonic tolerates whitespace/line breaks from re-typing the printed PDF blob', async () => {
+  const blob = await encryptMnemonic(MNEMONIC, 'recovery-password');
+  // Simulate what the PDF actually prints: the base64 blob wrapped across
+  // several lines, which a person re-typing or copy-pasting it back in is
+  // very likely to reproduce with line breaks and/or stray spaces.
+  const reTyped = blob.match(/.{1,20}/g).join('\n  ') + '\n';
+  assert.equal(await decryptMnemonic(reTyped, 'recovery-password'), MNEMONIC);
+});

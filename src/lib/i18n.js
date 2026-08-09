@@ -58,6 +58,36 @@ const dict = {
     en: 'The flow has four steps: 1) collect extra entropy, 2) choose the address type and an optional protection phrase, 3) generate your seed, address, and private key, and 4) export a PDF ready to print and keep physically. Use the <strong>Mode: Basic/Advanced</strong> switch at the top right depending on your experience, and hover over any <span class="tip" tabindex="0" data-tip="This is what help icons look like: hover (or tab to them with the keyboard) to see a short explanation of the field or option.">?</span> icon to see an explanation.',
   },
   'welcome.button': { es: 'Generar Nueva Cartera', en: 'Generate New Wallet' },
+  'welcome.recoverButton': { es: '🔓 Recuperar semilla cifrada', en: '🔓 Recover encrypted seed' },
+
+  'recover.title': { es: 'Recuperar semilla cifrada', en: 'Recover encrypted seed' },
+  'recover.intro': {
+    es: 'Pegá aquí el bloque cifrado que imprimiste en el PDF (o el texto que obtengas al escanear su código QR con la cámara del celular), junto con la contraseña que usaste para cifrarlo. Funciona sin haber generado nada en esta sesión: no necesitás la cartera original, solo el PDF y la contraseña.',
+    en: 'Paste here the encrypted block you printed on the PDF (or the text you get from scanning its QR code with your phone’s camera), along with the password you used to encrypt it. This works without having generated anything in this session: you only need the PDF and the password.',
+  },
+  'recover.blobLabel': { es: 'Bloque cifrado (AES-256-GCM)', en: 'Encrypted block (AES-256-GCM)' },
+  'recover.blobPlaceholder': {
+    es: 'Pegá o escribí aquí el bloque cifrado…',
+    en: 'Paste or type the encrypted block here…',
+  },
+  'recover.passwordLabel': { es: 'Contraseña de cifrado', en: 'Encryption password' },
+  'recover.decryptButton': { es: 'Descifrar', en: 'Decrypt' },
+  'recover.decrypting': { es: 'Descifrando…', en: 'Decrypting…' },
+  'recover.close': { es: 'Cerrar', en: 'Close' },
+  'recover.resultLabel': { es: 'Semilla recuperada', en: 'Recovered seed' },
+  'recover.selectableLabel': {
+    es: 'O seleccionala vos mismo (un clic la selecciona toda):',
+    en: 'Or select it yourself (one click selects it all):',
+  },
+  'recover.resultNote': {
+    es: 'Esta semilla no vuelve a cifrarse ni a guardarse en ningún lado: solo se muestra en pantalla. Copiala a mano o usá el botón "Copiar" para importarla en tu wallet, y cerrá esta ventana cuando termines.',
+    en: 'This seed is not re-encrypted or saved anywhere: it’s only shown on screen. Write it down or use the "Copy" button to import it into your wallet, and close this screen when you’re done.',
+  },
+  'recover.error.empty': { es: 'Pegá el bloque cifrado y la contraseña primero.', en: 'Paste the encrypted block and the password first.' },
+  'recover.error.failed': {
+    es: 'No se pudo descifrar. Revisá que copiaste el bloque completo (sin que falte ni sobre nada) y que la contraseña sea exactamente la que usaste.',
+    en: 'Could not decrypt. Check that you copied the entire block (nothing missing or extra) and that the password is exactly the one you used.',
+  },
 
   'entropy.title': { es: 'Paso 1 — Recolección de entropía', en: 'Step 1 — Entropy collection' },
   'entropy.intro': {
@@ -303,6 +333,10 @@ const dict = {
   'pdf.seedEncryptedLabel': {
     es: 'Semilla cifrada (AES-256-GCM) — requiere contrasena de cifrado propia:',
     en: 'Encrypted seed (AES-256-GCM) — requires its own encryption password:',
+  },
+  'pdf.seedRecoveryNote': {
+    es: 'Para recuperarla: abri index.html (guarda una copia junto a tus respaldos, funciona offline) y usa "Recuperar semilla cifrada" con este bloque (o el QR) y tu contrasena.',
+    en: 'To recover it: open index.html (keep a copy with your backups, it works offline) and use "Recover encrypted seed" with this block (or the QR) and your password.',
   },
   'pdf.wifLabel': { es: 'Clave privada (WIF):', en: 'Private key (WIF):' },
   'pdf.wifBip38Label': { es: 'Clave privada (WIF, cifrada BIP38):', en: 'Private key (WIF, BIP38 encrypted):' },

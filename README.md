@@ -74,7 +74,20 @@ alto. No sustituye al PDF: es una lista de referencia temporal, nada más.
   de BIP38): cifra las palabras del mnemonic con una contraseña propia antes
   de imprimirlas. Al usar un cifrado autenticado (GCM), una contraseña
   incorrecta falla de forma explícita en vez de devolver datos corruptos en
-  silencio, a diferencia de BIP38.
+  silencio, a diferencia de BIP38. **Recuperación**: la pantalla "🔓
+  Recuperar semilla cifrada" (accesible desde la pantalla inicial, sin
+  necesidad de haber generado nada en esa sesión) descifra el bloque pegado
+  desde el PDF de forma completamente independiente — es el único punto de
+  entrada del sistema para revertir este cifrado meses o años después. El
+  PDF también imprime un **código QR** del bloque cifrado (además del
+  texto): con GCM, un solo carácter mal transcrito hace fallar el
+  descifrado por completo, así que escanear con el celular es la única
+  forma realista de recuperarlo a mano. Este formato **no es un estándar**
+  (a diferencia de BIP38, que sí lo es e implementan otras billeteras) — la
+  única forma de descifrarlo es con este mismo `index.html` o con una
+  reimplementación exacta del algoritmo. Por eso: **guardá una copia de
+  `index.html` junto a tus respaldos**, separada físicamente del PDF; el
+  PDF mismo lo recuerda con una nota impresa.
 - **Direcciones adicionales** (modo avanzado): muestra e imprime, como
   referencia en una página aparte, las otras 3 direcciones derivables de la
   misma semilla. Deliberadamente **no** imprime sus claves privadas — se
@@ -176,7 +189,14 @@ de la cantidad de eventos — para que no vuelva a romperse en silencio.
   intencionalmente lento; en JS puro puede tardar varios segundos en equipos
   modestos. La UI se mantiene responsiva mientras tanto (yields periódicos).
 - No implementa descifrado BIP38 ni importación de carteras existentes: es
-  una herramienta de generación, no una billetera completa.
+  una herramienta de generación, no una billetera completa. (Para descifrar
+  un WIF con BIP38, usa cualquier billetera que lo soporte, p. ej. Electrum
+  — es un estándar público, no hace falta esta app específica.)
+- El cifrado AES de la semilla, en cambio, **no** es un estándar: es
+  propio de esta app. Si perdés el acceso a este `index.html` (y a
+  cualquier copia guardada), no hay otra herramienta en el ecosistema que
+  pueda descifrarlo — a diferencia de BIP38. Ver la sección de arriba para
+  la mitigación recomendada.
 - No verifica balances ni transmite transacciones — deliberadamente no tiene
   ninguna función de red. Tampoco implementa "sweep" (importar y gastar):
   requeriría construir y difundir una transacción, es decir, conexión a

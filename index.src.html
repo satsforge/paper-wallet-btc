@@ -61,6 +61,37 @@
       <p data-i18n="welcome.flow">El flujo consta de…</p>
       <div class="btn-row">
         <button class="btn btn-primary" id="btnStart" type="button" data-i18n="welcome.button">Generar Nueva Cartera</button>
+        <button class="btn btn-secondary" id="btnOpenRecover" type="button" data-i18n="welcome.recoverButton">🔓 Recuperar semilla cifrada</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECOVERY: decrypt a printed AES-256 seed blob independently of any session-generated wallet -->
+  <section class="screen" id="screen-recover">
+    <div class="panel">
+      <h2 data-i18n="recover.title">Recuperar semilla cifrada</h2>
+      <p data-i18n="recover.intro">Pegá aquí el bloque cifrado que imprimiste en el PDF…</p>
+      <label class="field-label" for="recoverBlob" data-i18n="recover.blobLabel">Bloque cifrado (AES-256-GCM)</label>
+      <textarea id="recoverBlob" rows="4" autocomplete="off" spellcheck="false" data-i18n-placeholder="recover.blobPlaceholder" placeholder="Pegá o escribí aquí el bloque cifrado…" style="width:100%; resize:vertical; background:var(--bg-panel-2); border:1px solid var(--border); color:var(--text); border-radius:8px; padding:11px 12px; font-family:var(--mono); font-size:13px;"></textarea>
+      <label class="field-label" for="recoverPassword" style="margin-top:14px;" data-i18n="recover.passwordLabel">Contraseña de cifrado</label>
+      <div class="input-group">
+        <input type="password" id="recoverPassword" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
+        <button class="eye-btn" id="toggleRecoverPassword" type="button" data-i18n-aria="config.passphrase.eyeAria" aria-label="Mostrar/ocultar">👁</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnDecryptRecover" type="button" data-i18n="recover.decryptButton">Descifrar</button>
+        <button class="btn btn-secondary" id="btnCloseRecover" type="button" data-i18n="recover.close">Cerrar</button>
+      </div>
+      <p id="recoverError" style="color:var(--danger); font-size:13px;"></p>
+
+      <div id="recoverResult" class="hidden" style="margin-top:10px;">
+        <label class="field-label"><span data-i18n="recover.resultLabel">Semilla recuperada</span>
+          <button class="copy-btn" id="btnCopyRecoveredSeed" type="button" data-i18n="dashboard.copy">Copiar</button>
+        </label>
+        <div class="mnemonic-grid" id="recoverMnemonicGrid"></div>
+        <label class="field-label" for="recoverSeedText" style="margin-top:10px;" data-i18n="recover.selectableLabel">O seleccionala vos mismo (un clic la selecciona toda):</label>
+        <textarea id="recoverSeedText" rows="2" readonly style="width:100%; resize:vertical; background:var(--bg-panel-2); border:1px solid var(--border); color:var(--text); border-radius:8px; padding:11px 12px; font-family:var(--mono); font-size:13px;"></textarea>
+        <p style="font-size:12.5px;" data-i18n="recover.resultNote">Esta semilla no vuelve a cifrarse ni a guardarse en ningún lado: solo se muestra en pantalla.</p>
       </div>
     </div>
   </section>

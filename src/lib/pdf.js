@@ -195,12 +195,30 @@ export async function buildPaperWalletPdf({
     doc.setTextColor(150, 20, 20);
     doc.text(tr('pdf.seedEncryptedLabel'), MARGIN, y);
     y += 6;
+
+    // A QR of the encrypted block matters here specifically: AES-GCM
+    // rejects the whole thing on a single mistyped character, so recovery
+    // by scanning (any phone camera) is far more realistic than re-typing
+    // ~170 base64 characters by hand from paper.
+    const qrSeedSize = 32;
+    const qrSeed = await qrDataUrl(encryptedSeedBlob, 6);
+    doc.addImage(qrSeed, 'PNG', MARGIN, y, qrSeedSize, qrSeedSize);
+
     doc.setFont('courier', 'normal');
     doc.setFontSize(8);
     doc.setTextColor(20);
-    const blobLines = doc.splitTextToSize(encryptedSeedBlob, PAGE_W - MARGIN * 2);
-    doc.text(blobLines, MARGIN, y);
-    y += blobLines.length * 4 + 6;
+    const blobX = MARGIN + qrSeedSize + 6;
+    const blobLines = doc.splitTextToSize(encryptedSeedBlob, PAGE_W - blobX - MARGIN);
+    doc.text(blobLines, blobX, y + 4);
+
+    y += Math.max(qrSeedSize, blobLines.length * 4) + 4;
+
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(7.5);
+    doc.setTextColor(120);
+    const recoveryNoteLines = doc.splitTextToSize(tr('pdf.seedRecoveryNote'), PAGE_W - MARGIN * 2);
+    doc.text(recoveryNoteLines, MARGIN, y);
+    y += recoveryNoteLines.length * 3.5 + 4;
   }
 
   // WIF / BIP38 + QR

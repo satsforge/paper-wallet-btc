@@ -23,9 +23,15 @@ export async function encryptMnemonic(mnemonic, password) {
   return base64.encode(concatBytes(salt, nonce, ciphertext));
 }
 
-/** Decrypts a blob produced by encryptMnemonic. Throws if the password is wrong. */
+/**
+ * Decrypts a blob produced by encryptMnemonic. Throws if the password is
+ * wrong or the blob is malformed. Whitespace (spaces/newlines) is stripped
+ * first: the PDF wraps the base64 blob across several printed lines, so
+ * whoever re-types or copy-pastes it back in will very likely include line
+ * breaks or stray spaces that aren't part of the actual base64 data.
+ */
 export async function decryptMnemonic(blob, password) {
-  const payload = base64.decode(blob);
+  const payload = base64.decode(blob.replace(/\s+/g, ''));
   const salt = payload.slice(0, SALT_LEN);
   const nonce = payload.slice(SALT_LEN, SALT_LEN + NONCE_LEN);
   const ciphertext = payload.slice(SALT_LEN + NONCE_LEN);
