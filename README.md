@@ -5,6 +5,15 @@ entregable final es **un único archivo `index.html`** autocontenido: sin
 llamadas de red, sin dependencias externas en tiempo de ejecución, apto para
 abrir con doble clic (`file://`) en un equipo desconectado de internet.
 
+> ⚠️ **Aviso importante — proyecto sin auditoría externa todavía.**
+> La criptografía está verificada contra vectores de prueba oficiales
+> (BIP38/BIP39/BIP84/BIP341) y cubierta por tests automáticos, pero **nadie
+> ajeno a este repositorio la auditó todavía**. Es software de código
+> abierto, se ofrece "tal cual", sin garantía, y quien lo usa asume el
+> riesgo. Antes de confiarle fondos reales: leé el código fuente vos mismo,
+> probá primero con montos pequeños, y revisá [`SECURITY.md`](SECURITY.md)
+> para el proceso de reporte de vulnerabilidades.
+
 ## Cómo usarlo
 
 Abre `index.html` en cualquier navegador moderno (Chrome, Firefox, Edge). No
@@ -165,7 +174,7 @@ política.
 npm test          # node --test — sin dependencias de testing externas
 ```
 
-27 tests sobre la lógica criptográfica en `src/lib/`, anclados a vectores de
+28 tests sobre la lógica criptográfica en `src/lib/`, anclados a vectores de
 prueba **oficiales** (vendorizados en `test/fixtures/`, no se descargan en
 tiempo de test — corren igual de offline que la propia app):
 
@@ -208,3 +217,9 @@ de la cantidad de eventos — para que no vuelva a romperse en silencio.
 - No implementa Shamir's Secret Sharing (división de la semilla en N-de-M
   partes). Es una función valiosa pero de alto riesgo de implementar mal;
   si la necesitas, quedó fuera de este alcance deliberadamente.
+
+## Licencia
+
+[ISC](LICENSE) — software "tal cual", sin garantía. Ver el aviso al
+principio de este documento y [`SECURITY.md`](SECURITY.md) antes de
+confiarle fondos reales.
